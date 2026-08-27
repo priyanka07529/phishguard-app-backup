@@ -93,11 +93,18 @@ export default function App() {
       return;
     }
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang === "hi" ? "hi-IN" : "en-IN";
-    utterance.rate = 0.85;
-    utterance.onend = () => setSpeaking(false);
-    setSpeaking(true);
-    window.speechSynthesis.speak(utterance);
+const targetLang = lang === "hi" ? "hi-IN" : "en-IN";
+
+const voices = window.speechSynthesis.getVoices();
+const matchedVoice = voices.find(v => v.lang === targetLang) || voices.find(v => v.lang.startsWith("hi"));
+
+utterance.lang = targetLang;
+if (matchedVoice) utterance.voice = matchedVoice;
+
+utterance.rate = 0.85;
+utterance.onend = () => setSpeaking(false);
+setSpeaking(true);
+window.speechSynthesis.speak(utterance);
   };
 
   const sendFamilyAlert = (suspiciousLink) => {
